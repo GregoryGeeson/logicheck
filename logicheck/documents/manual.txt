@@ -1,0 +1,88 @@
+Logicheck-2.1 by Ben Cottier
+
+
+ABOUT
+_____
+
+Logicheck is a graphical user interface (GUI) that allows users to create logical expressions and arguments in a propositional or Boolean logic syntax. Logicheck analyses these logical structures to determine the validity of logical arguments, and generate truth tables that can be viewed and interacted with. An understanding of propositional or Boolean logic is assumed of users.
+
+
+SYNTAX
+______
+
+The program requires input in a specific syntax outlined below.
+
+- Propositions are denoted as single letters or numbers, e.g.
+
+  Pigs fly = P
+  Unicorns exist = 3
+
+  Due to potential ambiguity, 0 or 1 is not allowed.
+
+- Logical operators, as shown left to right in the application, are:
+
+  negation: dash with a hook
+  conjunction: looks like an upside-down V
+  inclusive disjunction: looks like a V
+  exclusive disjunction: cross inside a circle
+  biconditional: double-ended arrow
+  conditional: right arrow
+
+- Premises are formed by placing an operator before a proposition in the case of the negation, and between propositions for all others, e.g.
+
+  (-P)
+  2u => A
+  2u <=> 3
+
+  Note that order is important for the conditional.
+
+- For the negation, or premises with multiple operators, use brackets to separate each, e.g.
+
+  'Either pigs fly or if unicorns do not exist then Ben is disappointed'
+
+  Denoting pigs fly = p, unicorns exist = u, Ben is disappointed = d, this translates to
+
+  p V ((-u) => d)
+
+
+GENERAL INSTRUCTIONS
+____________________
+
+To add a logical expression, type it in the entry box and click the 'Add' button. The premise should then be displayed in the large box below.
+
+For any number of expressions, you can click the "Show truth table" button at the bottom of the window to view the truth table for the set of expressions contained in the box.
+
+If you want to test the validity of an argument, type the expression constituting the conclusion and click 'Conclude'.
+
+The conclusion should then be displayed below the premises, indicated with a dividing line and u'\u2234' symbol. If the argument is valid, a message below the argument will say as such. If invalid, the message will say as such, along with a list of counter examples. '= 1' next to a proposition symbol indicates it is true in the counter example, while '= 0' indicates it is false, e.g.
+
+    The argument is invalid.
+
+    Counter examples:
+
+    p = 0 u = 1 d = 0
+    p = 1 u = 0 d = 0
+
+
+BUTTONS
+_______
+
+Add: displays the contents of the entry box, if the syntax is valid, and adds it to the box. Doing so immediately after concluding a previous argument will automatically reset the program, so make sure you are prepared to erase previous material.
+
+Conclude: displays the final entry, if valid, and adds it as the conclusion to an argument.
+
+Clear: clears the contents of the entry box.
+
+Back: removes the last expression added to the argument, returning it to the entry box.
+
+Reset: removes all information about the current set of expressions, allowing for the entry of a new expression.
+
+Show truth table: enabled if at least one expression is in the box. Generates the truth table for the set of expressions in the box, displayed in a new window.
+
+Operators: adds the operator symbol, shown on the selected operator button, to the entry box. This can be done either through clicking, or keys F1-F6.
+
+
+ERRORS
+______
+
+Error messages are displayed at the bottom of the window. If you press conclude without adding any premises, a message will prompt you to do so. Great effort has been made to handle all kinds of syntax errors, giving information on what is wrong with your input if you have incorrect syntax. In the unlikely event something goes wrong without an error message to acknowledge it, pressing the Reset button may get you back to normal. Otherwise, restart the program.

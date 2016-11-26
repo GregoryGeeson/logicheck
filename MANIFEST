@@ -1,0 +1,7 @@
+ChangeLog
+COPYING
+MANIFEST
+README.txt
+Logicheck/ArgTab.py
+Logicheck/TruthTab.py
+Logicheck.py

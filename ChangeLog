@@ -1,0 +1,29 @@
+Version history:
+
+2.1 (2016-07-24)
+
+Extended functionality of "back" button to include conclusions.
+
+Removed ability to change the most recently added premise to a conclusion,
+due to the above change, and an associated bug.
+
+Added the ability to generate and view truth tables for any set of logical
+expressions.
+
+2.0 (2016-07)
+
+Migrated from TkInter to PyQt GUI package.
+
+1.1 (2015)
+
+Added "back" button that allows the most recent added premise to be removed
+and returned to the entry line.
+
+1.0 (2015)
+
+Initial release with the core functionality that remains largely unchanged up
+to version 2.1. Included the ability to add a series of premises (logical
+expressions) and a conclusion to form a deductive argument. The program would
+then determine the logical validity of the argument; if invalid, a list of
+counterexamples that provided proof of invalidity was shown. At any time,
+the user could reset to return the program to its initial state.
