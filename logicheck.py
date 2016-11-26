@@ -96,5 +96,5 @@ if __name__ == "__main__":
 
 # ERROR LOG:
     # Manual window causes crash when run using python.exe
-
+    # manual.txt is poorly formatted and unicode does not work
 
