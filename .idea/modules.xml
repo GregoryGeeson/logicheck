@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Logicheck-2.1.iml" filepath="$PROJECT_DIR$/.idea/Logicheck-2.1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/logicheck.iml" filepath="$PROJECT_DIR$/.idea/logicheck.iml" />
     </modules>
   </component>
 </project>

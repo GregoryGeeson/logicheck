@@ -41,10 +41,10 @@ class Logicheck(QMainWindow):
         self.setCentralWidget(ArgCheck(self))
         self.setGeometry(50, 80, 425, 540)
         self.setWindowTitle("Logicheck")
-        self.setWindowIcon(QIcon("logicheck/images/logicheck_icon_3.png"))
+        self.setWindowIcon(QIcon("images/logicheck_icon_3.png"))
 
         # create menu
-        helpAction = QAction(QIcon("logicheck/images/logicheck_help_icon.png"),
+        helpAction = QAction(QIcon("images/logicheck_help_icon.png"),
                              "&Help", self)
         helpAction.setShortcut("Ctrl+H")
         helpAction.triggered.connect(self.show_info)
@@ -55,7 +55,7 @@ class Logicheck(QMainWindow):
 
     def show_info(self):
         # create about window
-        info_file = open("logicheck/documents/manual.txt", encoding="utf-8")
+        info_file = open("documents/manual.txt", encoding="utf-8")
         info = info_file.read()
         self.info_window = ManualWindow(info)
         font1 = QFont()
@@ -84,7 +84,7 @@ class ManualWindow(QMainWindow):
         self.setCentralWidget(info_widget)
         self.setGeometry(80, 110, 425, 540)
         self.setWindowTitle("Logicheck - Manual")
-        self.setWindowIcon(QIcon("logicheck/images/logicheck_icon_3.png"))
+        self.setWindowIcon(QIcon("images/logicheck_icon_3.png"))
 
 # create window
 if __name__ == "__main__":
