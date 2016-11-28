@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Logicheck</title>
+    </head>
+    <body>
+        <h1>Logicheck</h1>
+        <p>This is Logicheck v2.1.1 by Ben Cottier</p>
+        <h2>About</h2>
+        <p>Logicheck is a graphical user interface (GUI) that allows users to create logical expressions and arguments in a propositional or Boolean logic syntax. Logicheck analyses these logical structures to determine the validity of logical arguments, and generate truth tables that can be viewed and interacted with. An understanding of propositional or Boolean logic is assumed of users.</p>
+        <h2>Syntax</h2>
+        <p>The program requires input in a specific syntax outlined below.</p>
+        <ul>
+            <li><p>Propositions are denoted as single letters or numbers, e.g.</p>
+                <ul>
+                    <li>Pigs fly = p</li>
+                    <li>Unicorns exist = 3</li>
+                    <li>Ben is happy = h</li>
+                </ul>
+                <p>Due to potential ambiguity, 0 or 1 is not allowed.</p>
+            <li><p>Logical operators, as shown left to right in the interface, are:</p>
+                <ul>
+                    <li>&#172; : negation; NOT</li>
+                    <li>&#8743; : conjunction; AND</li>
+                    <li>&#8744; : inclusive disjunction; OR</li>
+                    <li>&#10753; : exclusive disjunction; XOR</li>
+                    <li>&#8660; : biconditional; IFF</>
+                    <li>&#8658; : conditional; IF</li>
+                </ul>
+            </li>
+            <li><p>Premises are formed by placing an operator before a proposition in the case of "&#172;", and between propositions for all others, e.g.</p>
+                <ul>
+                    <li>(&#172; p)</li>
+                    <li>p &#8743; 3</li>
+                    <li>3 &#8658; b</li>
+                </ul>
+                <p>Note that order is important for the conditional, but not for any other binary operators.</p>
+            </li>
+            <li>For the negation, or expressions with multiple operators, use brackets to separate each, e.g.
+                <p>"Either pigs fly or if unicorns do not exist then ben is not happy."</p>
+                <p>Denoting the propositions as above, this translates to</p>
+                <p>p &#8744; ((&#172; u) &#8658; (&#172; b)).</p>
+            </li>
+        </ul>
+
+<!--
+- For the negation, or premises with multiple operators, use brackets to separate each, e.g.
+
+  'Either pigs fly or if unicorns do not exist then Ben is disappointed'
+
+  Denoting pigs fly = p, unicorns exist = u, Ben is disappointed = d, this translates to
+
+  p V ((-u) => d)
+-->
+    </body>
+</html>
