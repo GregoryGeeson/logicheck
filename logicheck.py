@@ -55,7 +55,7 @@ class Logicheck(QMainWindow):
 
     def show_info(self):
         # create about window
-        info_file = open("documents/manual.txt", encoding="utf-8")
+        info_file = open("documents/manual.html")
         info = info_file.read()
         self.info_window = ManualWindow(info)
         font1 = QFont()
@@ -95,6 +95,5 @@ if __name__ == "__main__":
 
 
 # ERROR LOG:
-    # Manual window causes crash when run using python.exe
-    # manual.txt is poorly formatted and unicode does not work
+    #
 
