@@ -1,7 +1,13 @@
+.gitignore
+argument.py
 ChangeLog
 COPYING
+logicheck.py
 MANIFEST
-README.txt
-Logicheck/ArgTab.py
-Logicheck/TruthTab.py
-Logicheck.py
+PKG-INFO
+README.md
+setup.py
+truth_table.py
+documents/manual.html
+images/logicheck_help_icon.png
+images/logicheck_icon_3.png
