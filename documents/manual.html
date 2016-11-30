@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Logicheck</title>
+    </head>
+    <body>
+        <h1>Logicheck</h1>
+        <p>This is Logicheck v2.1.1 by Ben Cottier</p>
+        <h2>About</h2>
+        <p>Logicheck is a graphical user interface (GUI) that allows users to create logical expressions and arguments in a propositional or Boolean logic syntax. Logicheck analyses these logical structures to determine the validity of logical arguments, and generate truth tables that can be viewed and interacted with. An understanding of propositional or Boolean logic is assumed of users.</p>
+        <h2>Syntax</h2>
+        <p>The program requires input in a specific syntax outlined below.</p>
+        <ul>
+            <li><p>Propositions are denoted as single letters or numbers, e.g.</p>
+                <ul>
+                    <li>Pigs fly = p</li>
+                    <li>Unicorns exist = 3</li>
+                    <li>Ben is happy = h</li>
+                </ul>
+                <p>Due to potential ambiguity, 0 or 1 is not allowed.</p>
+            <li><p>Logical operators, as shown left to right in the interface, are:</p>
+                <ul>
+                    <li>&#172; : negation; NOT</li>
+                    <li>&#8743; : conjunction; AND</li>
+                    <li>&#8744; : inclusive disjunction; OR</li>
+                    <li>&#10753; : exclusive disjunction; XOR</li>
+                    <li>&#8660; : biconditional; IFF</li>
+                    <li>&#8658; : conditional; IF</li>
+                </ul>
+            </li>
+            <li><p>Premises are formed by placing an operator before a proposition in the case of "&#172;", and between propositions for all others, e.g.</p>
+                <ul>
+                    <li>(&#172; p)</li>
+                    <li>p &#8743; 3</li>
+                    <li>3 &#8658; b</li>
+                </ul>
+                <p>Note that order is important for the conditional, but not for any other binary operators.</p>
+            </li>
+            <li><p>For the negation, or expressions with multiple operators, use brackets to separate each, e.g.</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;"Either pigs fly or if unicorns do not exist then ben is not happy."</p>
+                <p>Denoting the propositions as above, this translates to</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;p &#8744; ((&#172; u) &#8658; (&#172; b)).</p>
+            </li>
+        </ul>
+        <h2>General Instructions</h2>
+        <p>The following is a general guide for how to use the program.</p>
+        <ul>
+            <li><p>To add a logical expression, type it in the entry box and click the "Add" button. The premise should then be displayed in the large box below.</p></li>
+            <li><p>For any number of expressions, you can click the "Show truth table" button at the bottom of the window to view the truth table for the set of expressions contained in the box.</p></li>
+            <li><p>If you want to test the validity of an argument, type the expression constituting the conclusion and click "Conclude". The conclusion should then be displayed below the premises, indicated with a dividing line and &#8756; symbol. If the argument is logically valid, a message below the argument will say as such. If invalid, the message will also include a list of counter examples. "=1" next to a proposition symbol indicates it is true in the counter example, while "=0" indicates it is false, e.g.</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;The argument is invalid.</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;Counter examples:</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;p = 0 &nbsp;3 = 1 &nbsp;h = 0<br>&nbsp;&nbsp;&nbsp;&nbsp;p = 1 &nbsp;3 = 0 &nbsp;h = 0</p></li>
+        </ul>
+        <h2>Buttons</h2>
+        <p>The following describes the function of each button in the interface.</p>
+        <ul>
+            <li><p>Add: displays the contents of the entry box, if the syntax is valid, and adds it to the box. Doing so immediately after concluding a previous argument will automatically reset the program, so make sure you are prepared to erase previous material.</p></li>
+            <li><p>Conclude: displays the final entry, if the syntax is valid, and adds it as the conclusion to an argument.</p></li>
+            <li>Clear: clears the contents of the entry box.</li>
+            <li><p>Back: removes the last expression added to the argument, returning it to the entry box.</p></li>
+            <li><p>Reset: removes all information about the current set of expressions, allowing for the entry of a new set.</p></li>
+            <li><p>Show truth table: enabled if at least one expression is in the display box. Generates the truth table for the set of expressions in the box, displayed in a new window.</p></li>
+            <li><p>Operators: adds the operator symbol, shown on the selected operator button, to the entry box. This can be done either through clicking, or keys F1-F6.</p></li>
+        </ul>
+        <h2>Errors</h2>
+        <p>Error messages are displayed at the bottom of the window. If you press conclude without adding any premises, a message will prompt you to do so. Great effort has been made to handle all kinds of syntax errors, giving information on what is wrong with your input if you have incorrect syntax. In the unlikely event something goes wrong without an error message to acknowledge it, pressing the Reset button may get you back to normal. Otherwise, restart the program.</p>
+        <p></p>
+    </body>
+</html>

@@ -31,6 +31,7 @@ from truth_table import TruthTable, TruthTableWindow
 
 operators1 = [u'\u00ac', u'\u2227', u'\u2228', u'\u2262', u'\u2261', u'\u2283']
 operators = [u'\u00ac', u'\u2227', u'\u2228', u'\u2a01', u'\u21d4', u'\u21d2']
+# html (prefix "&#", postfix ";"): 172, 8743, 8744, 10753, 8660, 8658
 
 
 def is_symbol(c):
