@@ -29,6 +29,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont
 from truth_table import TruthTable, TruthTableWindow
 
+# Unicode for logical operators
 operators1 = [u'\u00ac', u'\u2227', u'\u2228', u'\u2262', u'\u2261', u'\u2283']
 operators = [u'\u00ac', u'\u2227', u'\u2228', u'\u2a01', u'\u21d4', u'\u21d2']
 # html (prefix "&#", postfix ";"): 172, 8743, 8744, 10753, 8660, 8658
@@ -82,7 +83,7 @@ class PropArg(object):
         for i in range(len(perm)):
             vals = {psyms[j]: int(perm[i][j]) for j in range(0, n)}
             # E.g. vals = {'S':0, '5':1 '1':0, 'R':1} - assigns truth values
-            # in derm to propositions.
+            # in perm to propositions.
             arg = self.convert(psyms, vals)
             # determine truth value of arguments based on truth values in vals
             truth = [self.det(premise) for premise in arg]
@@ -145,15 +146,16 @@ class PropArg(object):
 
         q = 0
         while premise.find('(') != -1:
-            # as long as a bracket is found, i.e. their is a nested argument
+            # Loop while a bracket is found, i.e. there is a nested argument.
+            # Find the location of the first set of brackets.
             openb = premise.find('(')
             close = premise.find(')')
             while premise.count('(', openb + 1, close) != \
                     premise.count(')', openb + 1, close):
-                # check the number of open brackets is not equal to
+                # Check the number of open brackets is not equal to
                 # the number of close brackets between the current
                 # open bracket and the current close bracket.
-                # If so, change close point to correct close bracket
+                # If so, change close point to correct close bracket.
                 close = premise.find(')', close + 1)
             # replace old premise with truth value of nested arg
             premise = premise.replace(premise[openb:close + 1],
@@ -166,22 +168,23 @@ class PropArg(object):
         if len(props) > 1:
             q = props[1]
 
-        if op == '':
+        # Perform logical operation according to operator.
+        if op == '':  # no operator - leave as is
             v = p
-        elif op == operators[0]:
+        elif op == operators[0]:  # NOT
             v = int(not p)
-        elif op == operators[1]:
+        elif op == operators[1]:  # AND
             v = (p and q)
-        elif op == operators[2]:
+        elif op == operators[2]:  # OR
             v = (p or q)
-        elif op == operators[3]:
+        elif op == operators[3]:  # XOR
             v = int(p != q)
-        elif op == operators[4]:
+        elif op == operators[4]:  # IFF
             v = int(p == q)
-        elif op == operators[5]:
+        elif op == operators[5]:  # IF
             v = int(not (p == 1 and q == 0))
         else:
-            return
+            return -1  # Something went wrong
         return v
 
     def get_table_data(self):
