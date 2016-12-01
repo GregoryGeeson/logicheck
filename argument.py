@@ -200,6 +200,7 @@ class ArgCheck(QWidget):
         self.parent = main_window
         self._arg = []
         self._post_conc = False
+        self.raw_premises = []
         self.pretty_premises = []
         self._abort = False
         self.current_premise = None
@@ -298,7 +299,10 @@ class ArgCheck(QWidget):
 
     @staticmethod
     def check_premise(premise):
-        # e.g. premise = '0?((1?0)?1)'
+        # This function takes a brute-force approach to handling as many kinds
+        # of syntax errors as possible and giving a helpful description to the
+        # user of what is wrong.
+        # E.g. premise = '0?((1?0)?1)'
         result = 0
         all_brackets = False
         op_indices = []
@@ -433,6 +437,7 @@ class ArgCheck(QWidget):
                 self._abort = True
                 self.return_entry()
             else:
+                self.raw_premises.append(premise)
                 pretty_premise = premise
                 self.pretty_premises.append(pretty_premise) 
             # elif premise == '':  # handles late conclude
@@ -455,6 +460,7 @@ class ArgCheck(QWidget):
                 if self._post_conc:  # checks for a new argument
                     self.reset()
                     self._post_conc = False
+                self.raw_premises.append(premise)
                 pretty_premise = "".join([str(len(self._arg) + 1), ". ",
                                           premise])
                 self.pretty_premises.append(pretty_premise)
@@ -468,18 +474,37 @@ class ArgCheck(QWidget):
         self.clear_entry()
 
     def undo_prem(self):
-        if self._arg:  # and not self._post_conc:  # if >0 premises
+        # This is the function mapped to the "Back" button. It is a specific
+        # "undo" button that removes the latest addition to the display box
+        # and returns the input to the entry box.
+        # We can only remove a previously added premise if at least one is
+        # already there.
+        if self._arg:  # and not self._post_conc:
+            # In the case of only one premise being there, we must disable
+            # the truth table button for when the display is empty.
             if len(self._arg) == 1:
                 self.tableBtn.setDisabled(True)
+            # If the user just concluded an argument:
             if self._post_conc:
+                # Delete the conclusion-specific output.
                 self.outputLabel.deleteLater()
+                # Go back to pre-conclusion state.
                 self._post_conc = False
+            # Delete the most recently added premise from display.
             self.premise_labels[-1].deleteLater()
+            # Remove this from the list of displayed premises.
             self.premise_labels.remove(self.premise_labels[-1])
+            # Clear entry box in preparation for returned premise.
             self.clear_entry()
-            self.entry_line.insert(self._arg[-1])
+            # Insert removed premise.
+            self.entry_line.insert(self.raw_premises[-1])
+            # Bring the focus to the entry box.
             self.return_entry()
+            # Remove the raw premise text from the list.
+            self.raw_premises.remove(self.raw_premises[-1])
+            # Remove the processed premise text from the list.
             self._arg.remove(self._arg[-1])
+            # Remove the displayed premise text from the list.
             self.pretty_premises.remove(self.pretty_premises[-1])
 
     def add_conc(self):
@@ -529,12 +554,12 @@ class ArgCheck(QWidget):
         if clear:
             self.clear_entry()
         self._arg = []
+        self.raw_premises = []
         self.pretty_premises = []
         self.premise_labels = []
         self.clear_layout(self.arg_layout)
         self.parent.statusBar().showMessage("")
         self.tableBtn.setDisabled(True)
-
 
     def add_op(self):
         self.entry_line.insert(self.sender().text())
@@ -558,5 +583,7 @@ class ArgCheck(QWidget):
             self.entry_line.insert(operators[5])
 
 # ERROR LOG:
-    # Spaces not preserved in premise when using Back button
-    #
+    # Crash: typed a and b separated by a lot of spaces, then concluded with
+    # a complex expression, what I believed was the negation possibilities
+    # other than a and b.
+    # Conclusion formatting is dodgy.
