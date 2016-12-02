@@ -107,7 +107,7 @@ class PropArg(object):
             if valid:
                 output = '\nThe argument is valid.\n'
             else:
-                output = '\nThe argument is invalid.\n\nCounter examples:\n'
+                output = '\nThe argument is invalid. Counter examples:\n'
                 for v in bad_vals:
                     output += '\n'
                     for k in psyms:
@@ -450,9 +450,8 @@ class ArgCheck(QWidget):
             #     self.clear_layout(self.arg_layout)
             #     for e in self.pretty_premises[:-1]:
             #         self.arg_layout.addWidget(QLabel(e))
-                conc_len = len(premise)
-                pretty_premise = '_'*2*conc_len + '____\n' + u'\u2234' + \
-                                 '    ' + premise
+                pretty_premise = '____\n\n' + u'\u2234' + \
+                                 ' ' + premise
                 self.current_premise = QLabel(pretty_premise)
                 self.arg_layout.addWidget(self.current_premise)
                 self.premise_labels.append(self.current_premise)
