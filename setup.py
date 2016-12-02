@@ -162,6 +162,6 @@ setup(name="name",
 
       # py2exe options
       zipfile=None,
-      options={"py2exe": py2exe_options},
+      options={"py2exe": py2exe_options}, requires=['PyQt5']
       )
 

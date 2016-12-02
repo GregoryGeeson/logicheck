@@ -87,6 +87,8 @@ class PropArg(object):
             arg = self.convert(psyms, vals)
             # determine truth value of arguments based on truth values in vals
             truth = [self.det(premise) for premise in arg]
+            if -1 in truth:
+                return -1
             all_truth.append(truth)
             if test and truth[-1] == 0 and truth[:-1] == (len(arg) - 1) * [1]:
                 valid = False
@@ -184,7 +186,7 @@ class PropArg(object):
         elif op == operators[5]:  # IF
             v = int(not (p == 1 and q == 0))
         else:
-            return -1  # Something went wrong
+            return -1  # Something went wrong - unhandled exception
         return v
 
     def get_table_data(self):
@@ -523,6 +525,14 @@ class ArgCheck(QWidget):
                 return
             self.prop_arg = PropArg(self._arg)
             output = self.prop_arg.evaluate()
+            if output == -1:  # Unhandled exception
+                self.parent.statusBar().showMessage("An unknown error "
+                                                    "occurred. Check for"
+                                                    " ambiguity in the"
+                                                    " expression.")
+                # Force "Back" button
+                self.undo_prem()
+                return
             self.outputLabel = QLabel(output)
             self.arg_layout.addWidget(self.outputLabel)
             self._post_conc = True
@@ -586,7 +596,4 @@ class ArgCheck(QWidget):
             self.entry_line.insert(operators[5])
 
 # ERROR LOG:
-    # Crash: typed a and b separated by a lot of spaces, then concluded with
-    # a complex expression, what I believed was the negation possibilities
-    # other than a and b.
     # Conclusion formatting is dodgy.
