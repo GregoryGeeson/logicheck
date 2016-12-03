@@ -30,32 +30,43 @@ from argument import ArgCheck
 
 
 class Logicheck(QMainWindow):
+    """The main window for the application.
+    """
+
     def __init__(self):
         """
         Constructor
         """
 
+        # Inherit from QMainWindow.
         super().__init__()
 
-        # top-level config
+        # Top-level config:
         self.setCentralWidget(ArgCheck(self))
+        # Set relative window position (first two args) and size.
         self.setGeometry(50, 80, 425, 540)
         self.setWindowTitle("Logicheck")
         self.setWindowIcon(QIcon("images/logicheck_icon_3.png"))
 
-        # create menu
+        # Create menu.
+        # Create a help action which will go in a drop-down menu.
+        # The "&" in "&Help" specifies the Alt- shortcut key.
         helpAction = QAction(QIcon("images/logicheck_help_icon.png"),
                              "&Help", self)
         helpAction.setShortcut("Ctrl+H")
+        # Connect the selection of the action to displaying the manual
         helpAction.triggered.connect(self.show_info)
+        # Create the status bar and the menu bar
         self.statusBar()
         menubar = self.menuBar()
         helpMenu = menubar.addMenu("&Help")
+        # Link the menu item to the action.
         helpMenu.addAction(helpAction)
 
     def show_info(self):
-        # create about window
+        # Create window displaying the manual.
         info_file = open("documents/manual.html")
+        # Get the contents (text).
         info = info_file.read()
         self.info_window = ManualWindow(info)
         font1 = QFont()
@@ -65,6 +76,8 @@ class Logicheck(QMainWindow):
 
 
 class ManualWindow(QMainWindow):
+    """The window for displaying the operation manual.
+    """
 
     def __init__(self, info):
         """
@@ -73,9 +86,11 @@ class ManualWindow(QMainWindow):
 
         super().__init__()
 
+        # Create object to display text.
         info_text = QTextEdit()
         info_text.setReadOnly(True)
         info_text.setText(info)
+        # Create layout to store text object.
         info_layout = QGridLayout()
         info_layout.addWidget(info_text, 0, 0)
         info_widget = QWidget()
@@ -86,13 +101,16 @@ class ManualWindow(QMainWindow):
         self.setWindowTitle("Logicheck - Manual")
         self.setWindowIcon(QIcon("images/logicheck_icon_3.png"))
 
-# create window
+# Create window.
+# Execute the program only if the file was run directly, not imported.
 if __name__ == "__main__":
+    # Create application object.
+    # "sys.argv" is a list of args from the command line.
+    # This allows controlled startup from the shell.
     app = QApplication(sys.argv)
+    # Initialise main window and display it.
     window = Logicheck()
     window.show()
+    # Enter the mainloop, which exits if exit() is called or the main widget
+    # is destroyed. This gives a clean exit, with exit code.
     sys.exit(app.exec_())
-
-
-# ERROR LOG:
-    #
