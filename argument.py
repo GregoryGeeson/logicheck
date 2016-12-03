@@ -68,7 +68,7 @@ class PropArg(object):
         is valid or invalid. If invalid, counter examples are listed in the
         string.
 
-        evaluate(bool) -> None or str
+        evaluate(bool) -> NoneType or str
         """
 
         bad_vals = []
@@ -173,9 +173,10 @@ class PropArg(object):
         det(str, dict) -> int)
         """
 
+        # Initialise q as a precaution.
         q = 0
+        # Loop while a bracket is found, i.e. there is a nested expression.
         while premise.find('(') != -1:
-            # Loop while a bracket is found, i.e. there is a nested argument.
             # Find the location of the first set of brackets.
             openb = premise.find('(')
             close = premise.find(')')
@@ -184,14 +185,18 @@ class PropArg(object):
                 # Check the number of open brackets is not equal to
                 # the number of close brackets between the current
                 # open bracket and the current close bracket.
-                # If so, change close point to correct close bracket.
+                # If so, move "close" to the next position and check again.
                 close = premise.find(')', close + 1)
-            # Replace old premise with truth value of nested arg.
+            # Replace old premise with truth value of nested expression.
             premise = premise.replace(premise[openb:close + 1],
                                       str(self.det(premise[openb + 1:close])))
 
+        # The premise should now be reduced to an expression containing at
+        # most one operator and at least one truth value (0 or 1).
         digits = [c for c in premise if c.isdigit()]
+        # Removing the digits should leave the operator.
         op = premise.strip(''.join(digits))
+        # Store the truth value(s) as integer(s).
         props = [int(c) for c in digits]
         p = props[0]
         if len(props) > 1:
@@ -214,22 +219,33 @@ class PropArg(object):
             v = int(not (p == 1 and q == 0))
         else:
             return -1  # Something went wrong - unhandled exception.
+        # v is the overall truth value, the result required.
         return v
 
     def get_table_data(self):
+        """Retrieve the table data created in evaluate().
+
+        get_table_data() -> list
+        """
         return self._table_data
 
 
 class ArgCheck(QWidget):
+    """The main widget of the application. Contains the input functionality,
+    i.e. entry box, commands, operators, and handles the display of logical
+    expressions and truth tables.
+    """
 
     def __init__(self, main_window):
         """
         Constructor
         """
 
-        # inherit
+        # Inherit from QWidget.
         super().__init__()
         self.parent = main_window
+
+        # Initialise variables.
         self._arg = []
         self._post_conc = False
         self.raw_premises = []
@@ -238,11 +254,12 @@ class ArgCheck(QWidget):
         self.current_premise = None
         self.premise_labels = []
 
+        # Set font.
         font1 = QFont()
         font1.setPointSize(11)
         self.setFont(font1)
 
-        # create input layout
+        # Create input layout.
         self.prompt_label = QLabel("Expression:")
         self.entry_line = QLineEdit()
         self.entry_line.setFont(font1)
@@ -253,26 +270,30 @@ class ArgCheck(QWidget):
         self.input_layout.addWidget(QLabel("Commands:"), 1, 0)
         self.input_layout.addWidget(QLabel("Operators:"), 2, 0)
 
-        # create command layout
+        # Create layout for command buttons.
+        # Create command labels, associated methods, and tooltips.
         commands = ["&Add", "&Conclude", "Cl&ear", "&Back", "&Reset"]
         command_methods = [self.add_prem, self.add_conc, self.clear_entry,
                            self.undo_prem, self.trans_reset(True)]
-        command_tooltips = ["Add a premise", "Add the conclusion",
-                            "Clear the entry line", "Remove last premise",
-                            "Remove current argument"]
+        command_tooltips = ["Add expression", "Add concluding expression",
+                            "Clear the entry line", "Remove last expression",
+                            "Erase everything"]
         self.command_layout = QHBoxLayout()
+        # Connect command data to buttons.
         for name, method, tooltip in zip(commands, command_methods,
                                          command_tooltips):
             btn = QPushButton(name)
             btn.clicked.connect(method)
             btn.setToolTip(tooltip)
+            # Customise the button width according to label length,
+            # with consistent padding.
             width = btn.fontMetrics().boundingRect(name).width() + 20
             btn.setMaximumWidth(width)
             self.command_layout.addWidget(btn)
         self.command_layout.addStretch(1)
         self.input_layout.addLayout(self.command_layout, 1, 1)
 
-        # create ops layout
+        # Similarly, create layout for operator buttons.
         self.op_layout = QHBoxLayout()
         self.op_tooltips = ["Negation/NOT (F1)", "Conjunction/AND (F2)",
                             "Inclusive disjunction/OR (F3)",
@@ -292,7 +313,7 @@ class ArgCheck(QWidget):
         # .connect(QShortcut(QKeySequence("Alt+N"), self),
         #              QtCore.SIGNAL("activated()"), self._not)
 
-        # create arg layout
+        # Create layout to display logical expressions.
         self.arg_layout = QVBoxLayout()
         self.arg_layout.setAlignment(Qt.AlignTop)
         self.arg_widget = QWidget()
@@ -300,8 +321,9 @@ class ArgCheck(QWidget):
         # stylesheet1 = "background-color:White"
         # self.arg_widget.setStyleSheet(stylesheet1)
 
-        # scroll area properties
+        # Make a scroll area for the display.
         self.scroll = QScrollArea()
+        # Set the scroll area properties.
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setWidgetResizable(True)
@@ -309,15 +331,16 @@ class ArgCheck(QWidget):
         self.scroll_layout = QVBoxLayout()
         self.scroll_layout.addWidget(self.scroll)
 
-        # create truth table viewer layout
+        # Create layout to display truth tables.
         self.tableBtn = QPushButton("Show &truth table")
         self.tableBtn.setMaximumWidth(125)
         self.tableBtn.clicked.connect(self.show_truth_table)
+        # Disabled until at least one expression added.
         self.tableBtn.setDisabled(True)
         self.table_layout = QHBoxLayout()
         self.table_layout.addWidget(self.tableBtn, alignment=Qt.AlignCenter)
 
-        # create main layout
+        # Create a main layout containing the other layouts.
         layouts = [self.input_layout, self.command_layout, self.op_layout,
                    self.scroll_layout, self.table_layout]
         positions = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]
@@ -327,16 +350,28 @@ class ArgCheck(QWidget):
         self.setLayout(self.main_layout)
 
     def trans_reset(self, clear):
+        """Accesses reset() indirectly for Reset button functionality.
+
+        trans_reset(bool) -> NoneType
+        """
         return lambda: self.reset(clear)
 
     @staticmethod
     def check_premise(premise):
-        # This function takes a brute-force approach to handling as many kinds
-        # of syntax errors as possible and giving a helpful description to the
-        # user of what is wrong.
-        # E.g. premise = '0?((1?0)?1)'
+        """Takes a brute-force approach to handling as many kinds of syntax
+        errors as possible and giving a helpful description to the user of
+        what is wrong.
+
+        If no error is found, returns 0, else a string describing the error.
+
+        check_premise(str) -> int or str
+        """
+
+        # Default value remains if all error handling is cleared.
         result = 0
+        # Whether the expression is just brackets.
         all_brackets = False
+        # Locations of operators.
         op_indices = []
 
         if premise == '':  # handled in add_prem
@@ -443,13 +478,24 @@ class ArgCheck(QWidget):
         return result
 
     def return_entry(self):
+        """Brings the focus of the application to the entry line.
+        """
         self.entry_line.setFocus()
 
     def clear_entry(self):
+        """Removes all text from the entry line and brings the focus to it.
+        """
         self.entry_line.clear()
         self.entry_line.setFocus()
 
     def add_prem(self, is_conc=False):
+        """Adds a logical expression to a list and displays it in the window.
+
+        If is_conc == True, the expression is treated as the conclusion to a
+        deductive argument.
+
+        add_prem(bool) -> NoneType
+        """
         self._abort = False
 
         self.parent.statusBar().clearMessage()
@@ -604,9 +650,11 @@ class ArgCheck(QWidget):
         self.entry_line.insert(self.sender().text())
         self.return_entry()
 
+    # Unimplemented feature.
     def show_op_info(self):
         pass
 
+    # Unimplemented feature.
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_F1:
             self.entry_line.insert(operators[0])
