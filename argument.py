@@ -29,12 +29,14 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont
 from truth_table import TruthTable, TruthTableWindow
 
-# Unicode for logical operators
+# Unicode for logical operators - "operators" currently used.
 operators1 = [u'\u00ac', u'\u2227', u'\u2228', u'\u2262', u'\u2261', u'\u2283']
 operators = [u'\u00ac', u'\u2227', u'\u2228', u'\u2a01', u'\u21d4', u'\u21d2']
-# html (prefix "&#", postfix ";"): 172, 8743, 8744, 10753, 8660, 8658
+# html (prefix "&#", postfix ";"): 172, 8743, 8744, 10753, 8660, 8658.
 
 
+# Check if a string character is a letter or a number,
+# i.e. a valid symbol, not a logical operator.
 def is_symbol(c):
     if c.isalpha() or c.isdigit():
         return True
@@ -51,71 +53,93 @@ class PropArg(object):
         Constructor
         """
 
-        # list of premises/expressions, and conclusion if provided
+        # Store the list of premises/expressions, and conclusion if provided.
         self._arg = arg
-        # e.g. self._arg = ['Sv((P^Q)->R)', '-S', 'Q']
+        # E.g. self._arg = ['Sv((P^Q)->R)', '-S', 'Q'].
+        # Store all symbols representing propositions, as they occur.
         self._pin = [c for p in arg for c in p if is_symbol(c)]
-        # number of propositions in argument
-        self.n = len(self._pin)
 
     def evaluate(self, test=True):
-        """If test == True, states if a propositional argument is valid or
-        invalid. If invalid, counter examples are listed in output.
+        """Calculates the truth values of the set of logical expressions
+        stored in self._arg. Generates a TruthTable object used to display
+        the truth values.
 
-        If test == False, only calculate the truth values of the input.
+        If test == True, returns a string stating if a propositional argument
+        is valid or invalid. If invalid, counter examples are listed in the
+        string.
 
-        is_valid(int, list<str>) -> str
-        Precondition: arg is in the correct format.
+        evaluate(bool) -> None or str
         """
 
         bad_vals = []
+        # Assume the argument is valid and prove invalid by contradiction.
         valid = True
         all_truth = []
 
-        # generate list of all unique proposition symbols contained in arg
+        # Generate list of all unique proposition symbols contained in arg.
         psyms = list(unique_everseen(self._pin))
-        # e.g. psyms = ['S', '5', '1', 'R']
+        # E.g. psyms = ['S', '5', '2', 'R'].
         n = len(psyms)
-        # create all permutations of 0's and 1's of length n,
-        # i.e. every possible set of truth values
+        # Create all permutations of 0's and 1's of length n,
+        # i.e. every possible set of truth values.
+        # This line of code is where the project started!
         perm = [x for x in product('01', repeat=n)]
 
+        # Evaluate the argument for every set of truth values.
         for i in range(len(perm)):
-            vals = {psyms[j]: int(perm[i][j]) for j in range(0, n)}
-            # E.g. vals = {'S':0, '5':1 '1':0, 'R':1} - assigns truth values
-            # in perm to propositions.
+            # Assign truth values to the symbols.
+            vals = {psyms[j]: int(perm[i][j]) for j in range(n)}
+            # E.g. vals = {'S':0, '5':1 '2':0, 'R':1}.
+            # Convert the symbols in self._arg to the truth values.
             arg = self.convert(psyms, vals)
-            # determine truth value of arguments based on truth values in vals
+            # Determine truth value of the premises.
             truth = [self.det(premise) for premise in arg]
-            if -1 in truth:
+            if -1 in truth:  # Unhandled exception - abort
                 return -1
+            # Add this set of truth values to the list of all sets.
             all_truth.append(truth)
+            # Condition for invalidity: all premises are true (=1) and the
+            # conclusion is false (=0).
             if test and truth[-1] == 0 and truth[:-1] == (len(arg) - 1) * [1]:
                 valid = False
-                # construct list of counter examples for output
+                # Construct list of counter examples for the output message.
                 bad_vals.append(vals)
             else:
+                # The current set of truth values is not a counter example to
+                # argument - move on and test the next set.
                 continue
 
+        # Send all of the information obtained about the set of expressions
+        # to the TruthTable class, which will allow the generation and display
+        # of a truth table.
+        # deepcopy prevents the source objects being modified in the process.
         self.truth_table = TruthTable(deepcopy(psyms),
                                       deepcopy(self._arg),
                                       deepcopy(perm),
                                       deepcopy(all_truth), conc=test)
         self._table_data = self.truth_table.get_table_data()
 
+        # Return a statement about the validity of the argument if requested.
         if test:
             if valid:
                 output = '\nThe argument is valid.\n'
             else:
                 output = '\nThe argument is invalid. Counter examples:\n'
+                # List the counter examples, stored in bad_vals.
                 for v in bad_vals:
                     output += '\n'
                     for k in psyms:
                         output += str(k) + ' = ' + str(v[k]) + '  '
                     output += '\n'
                 output += '\n'
+                # E.g.
+                # The argument is invalid. Counter examples:
+                #
+                # S = 0,  5 = 1,  2 = 1,  R = 0
+                # S = 0,  5 = 0,  2 = 0,  R = 1
             return output
 
+        # Otherwise return with nothing.
         return
 
     def convert(self, psyms, vals):
@@ -124,24 +148,27 @@ class PropArg(object):
 
         convert(list<str>, dict) -> list<str>
         """
-        # e.g. psyms = ['S', '0', '1', 'R']
-        #      vals = {'S':0, '0':1 '1':0, 'R':1}
-        # Error to be fixed: using '1' or '0' as a symbol
-        # e.g. psyms = ['a', '0']
-        #      vals = {'a':0, '0':1}
-        #      a's have already been replaced with '0' - these 0's then get
-        #      replaced with 1's on the second iteration
+
+        # E.g. psyms = ['S', '5', '2', 'R'],
+        # vals = {'S':0, '5':1 '2':0, 'R':1}.
+        # FIXME: allow use of '1' or '0' as a symbol.
+        # E.g. psyms = ['a', '0'], vals = {'a':0, '0':1}.
+        #      The a's have already been replaced with '0' - these then get
+        #      replaced with 1's on the second iteration.
+        # NOTE: could remove digit compatibility entirely. Statements like
+        # "5 = 1" are confusing.
+
         argx = []
         for premise in self._arg:
             for c in psyms:
                 premise = premise.replace(c, str(vals[c]))
             argx.append(premise)
         return argx
-        # e.g. argx = ['0->((1^0)v1)', '~0', '0']
+        # E.g. argx = ['0->((1^0)v1)', '~0', '0'].
 
     def det(self, premise):
-        """Determines the truth value of premise based on proposition
-        truth values in vals
+        """Determines the truth value of premise based on the proposition
+        truth values in vals.
 
         det(str, dict) -> int)
         """
@@ -159,7 +186,7 @@ class PropArg(object):
                 # open bracket and the current close bracket.
                 # If so, change close point to correct close bracket.
                 close = premise.find(')', close + 1)
-            # replace old premise with truth value of nested arg
+            # Replace old premise with truth value of nested arg.
             premise = premise.replace(premise[openb:close + 1],
                                       str(self.det(premise[openb + 1:close])))
 
@@ -171,7 +198,7 @@ class PropArg(object):
             q = props[1]
 
         # Perform logical operation according to operator.
-        if op == '':  # no operator - leave as is
+        if op == '':  # No operator - leave as is.
             v = p
         elif op == operators[0]:  # NOT
             v = int(not p)
@@ -186,7 +213,7 @@ class PropArg(object):
         elif op == operators[5]:  # IF
             v = int(not (p == 1 and q == 0))
         else:
-            return -1  # Something went wrong - unhandled exception
+            return -1  # Something went wrong - unhandled exception.
         return v
 
     def get_table_data(self):
@@ -593,6 +620,3 @@ class ArgCheck(QWidget):
             self.entry_line.insert(operators[4])
         elif e.key() == Qt.Key_F6:
             self.entry_line.insert(operators[5])
-
-# ERROR LOG:
-    # Conclusion formatting is dodgy.
