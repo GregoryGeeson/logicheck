@@ -483,48 +483,94 @@ class ArgCheck(QWidget):
         self.entry_line.setFocus()
 
     def clear_entry(self):
-        """Removes all text from the entry line and brings the focus to it.
+        """Maps to the "Clear" button. Removes all text from the entry line
+        and brings the focus to it.
         """
         self.entry_line.clear()
         self.entry_line.setFocus()
 
     def add_prem(self, is_conc=False):
-        """Adds a logical expression to a list and displays it in the window.
+        """Maps to the "Add" button. Adds a logical expression to a list and
+        displays it in the window.
 
         If is_conc == True, the expression is treated as the conclusion to a
         deductive argument.
 
         add_prem(bool) -> NoneType
         """
-        self._abort = False
 
+        # _abort is True when something is wrong with the input, preventing it
+        # from being added.
+        self._abort = False
+        # Whatever was in the status bar can be removed at this point, to be
+        # replaced by potential error messages.
         self.parent.statusBar().clearMessage()
 
+        # Retrieve the text from the entry line as the expression to be
+        # processed.
         premise = self.entry_line.text()
+        # Check the expression for syntax errors, ignoring whitespace.
         error = self.check_premise(premise.replace(" ", ""))
         if error != 0:
+            # There is an error and the expression will not be processed.
             self.parent.statusBar().showMessage(error)
             self._abort = True
             self.return_entry()
             return
 
+        # Check if the expression is meant as the conclusion to an argument.
         if is_conc:
             if premise == '':
+                # Nothing was entered - this won't work.
                 self.parent.statusBar().showMessage("Enter an expression to "
                                                     "conclude with")
                 self._abort = True
                 self.return_entry()
             else:
+                # The raw premise is returned to the entry line if undo_prem()
+                # is called.
                 self.raw_premises.append(premise)
+                # Pretty premise gets displayed in the window.
                 pretty_premise = premise
-                self.pretty_premises.append(pretty_premise) 
-            # elif premise == '':  # handles late conclude
-            #     premise = self._arg[-1]
-            #     self.clear_layout(self.arg_layout)
-            #     for e in self.pretty_premises[:-1]:
-            #         self.arg_layout.addWidget(QLabel(e))
+                self.pretty_premises.append(pretty_premise)
+                # Old functionality - allowed the latest premise to be changed
+                # into a conclusion by selecting Conclude with an empty entry.
+                # This caused bugs when other functionality was added.
+                # elif premise == '':
+                #     premise = self._arg[-1]
+                #     self.clear_layout(self.arg_layout)
+                #     for e in self.pretty_premises[:-1]:
+                #         self.arg_layout.addWidget(QLabel(e))
+                # Extra formatting for the conclusion: a dividing line and
+                # "therefore" symbol.
                 pretty_premise = '____\n\n' + u'\u2234' + \
                                  ' ' + premise
+                # Display the expression in the window.
+                self.current_premise = QLabel(pretty_premise)
+                self.arg_layout.addWidget(self.current_premise)
+                self.premise_labels.append(self.current_premise)
+                # Spaces are not handled by PropArg.evaluate() so remove.
+                premise = premise.replace(' ', '')
+                # Add to the list of expressions (the argument).
+                self._arg.append(premise)
+                # Enable display of truth table.
+                self.tableBtn.setDisabled(False)
+
+        else:
+            # The input is a regular expression - the usual procedure.
+            if premise != '':
+                # Something has been entered - proceed.
+                if self._post_conc:
+                    # Expression has been entered after the conclusion.
+                    # Force a reset to start a new argument.
+                    self.reset()
+                    self._post_conc = False
+                self.raw_premises.append(premise)
+                # Add a number to the displayed expression.
+                pretty_premise = "".join([str(len(self._arg) + 1), ". ",
+                                          premise])
+                # Proceed as in the "if" case.
+                self.pretty_premises.append(pretty_premise)
                 self.current_premise = QLabel(pretty_premise)
                 self.arg_layout.addWidget(self.current_premise)
                 self.premise_labels.append(self.current_premise)
@@ -532,33 +578,18 @@ class ArgCheck(QWidget):
                 self._arg.append(premise)
                 self.tableBtn.setDisabled(False)
 
-        else:
-            if premise != '':  # if something is entered
-                if self._post_conc:  # checks for a new argument
-                    self.reset()
-                    self._post_conc = False
-                self.raw_premises.append(premise)
-                pretty_premise = "".join([str(len(self._arg) + 1), ". ",
-                                          premise])
-                self.pretty_premises.append(pretty_premise)
-                self.current_premise = QLabel(pretty_premise)
-                self.arg_layout.addWidget(self.current_premise)
-                self.premise_labels.append(self.current_premise)
-                premise = premise.replace(' ', '')
-                self._arg.append(premise)  # add premise to overall argument
-                self.tableBtn.setDisabled(False)
-
+        # Clear the entry line for a new input.
         self.clear_entry()
 
     def undo_prem(self):
-        # This is the function mapped to the "Back" button. It is a specific
-        # "undo" button that removes the latest addition to the display box
-        # and returns the input to the entry box.
-        # We can only remove a previously added premise if at least one is
-        # already there.
+        """Maps to the "Back" button. Removes the latest addition to the
+        display box and returns the input to the entry box, as long as at
+        least one expression is already there.
+        """
+
         if self._arg:  # and not self._post_conc:
-            # In the case of only one premise being there, we must disable
-            # the truth table button for when the display is empty.
+            # In the case of only one premise being there, disable the truth
+            # table button for when the display is empty.
             if len(self._arg) == 1:
                 self.tableBtn.setDisabled(True)
             # If the user just concluded an argument:
@@ -585,16 +616,25 @@ class ArgCheck(QWidget):
             self.pretty_premises.remove(self.pretty_premises[-1])
 
     def add_conc(self):
+        """Maps to the "Conclude" button. Adds a logical expression as the
+        conclusion to a deductive argument and tests its validity.
+        """
         if self._arg and not self._post_conc:
+            # A set of expressions exists which has not yet been concluded.
             if len(self._arg) == 1 and self.entry_line.text() == "":
+                # User is trying to conclude with only one premise entered.
                 self.parent.statusBar().showMessage("Argument must have at "
                                                     "least one premise and "
                                                     "one conclusion")
                 self.return_entry()
                 return
+            # Add the expression to the argument, specifying it as the
+            # conclusion.
             self.add_prem(is_conc=True)
             if self._abort:
+                # Something went wrong - abort the process.
                 return
+            # Create an
             self.prop_arg = PropArg(self._arg)
             output = self.prop_arg.evaluate()
             if output == -1:  # Unhandled exception
