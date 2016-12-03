@@ -38,6 +38,12 @@ operators = [u'\u00ac', u'\u2227', u'\u2228', u'\u2a01', u'\u21d4', u'\u21d2']
 # Check if a string character is a letter or a number,
 # i.e. a valid symbol, not a logical operator.
 def is_symbol(c):
+    """Returns True if a string character is a letter or a number, i.e. a
+    valid symbol, not a logical operator; otherwise False.
+
+    is_symbol(str) -> bool
+    Precondition: len(c) == 1
+    """
     if c.isalpha() or c.isdigit():
         return True
     else:
@@ -51,6 +57,8 @@ class PropArg(object):
     def __init__(self, arg):
         """
         Constructor
+
+        __init__(list<str>)
         """
 
         # Store the list of premises/expressions, and conclusion if provided.
@@ -239,6 +247,8 @@ class ArgCheck(QWidget):
     def __init__(self, main_window):
         """
         Constructor
+
+        __init__(QMainWindow)
         """
 
         # Inherit from QWidget.
@@ -634,7 +644,7 @@ class ArgCheck(QWidget):
             if self._abort:
                 # Something went wrong - abort the process.
                 return
-            # Create an
+            # Test the validity of the argument using the PropArg object.
             self.prop_arg = PropArg(self._arg)
             output = self.prop_arg.evaluate()
             if output == -1:  # Unhandled exception
@@ -642,51 +652,88 @@ class ArgCheck(QWidget):
                                                     "occurred. Check for"
                                                     " ambiguity in the"
                                                     " expression.")
-                # Force "Back" button
+                # Force "Back" button.
                 self.undo_prem()
                 return
+            # Display the output message in the window.
             self.outputLabel = QLabel(output)
             self.arg_layout.addWidget(self.outputLabel)
+            # Indicate the conclusion has been processed.
             self._post_conc = True
 
         else:
+            # Concluded argument already exists, or no expressions at all.
             # self.reset()
             self.parent.statusBar().showMessage("Add a premise first")
             self.return_entry()
 
     def show_truth_table(self):
+        """Displays the truth table for the set of expressions currently in
+        the widget, in a new window.
+        """
         if not self._post_conc:
+            # The logic of the expressions has not been processed - do so now
+            # without checking for validity.
             self.prop_arg = PropArg(self._arg)
             self.prop_arg.evaluate(test=False)
+        # Retrieve the data for the truth table.
         self.table_data = self.prop_arg.get_table_data()
+        # Create a new window to display the table.
         self.table_window = TruthTableWindow(self.table_data)
         self.table_window.show()
 
     @staticmethod
     def layout_widgets(layout):
+        """Returns all QWidgets contained in a QLayout.
+
+        layout_widgets(QLayout) -> tuple<QWidget>
+        """
         return (layout.itemAt(i) for i in range(layout.count()))
 
     @staticmethod
     def clear_layout(layout):
+        """Clears all QWidget and QLayout objects from a QLayout.
+
+        clear_layout(QLayout)
+        """
         while layout.count():
+            # There are objects in the layout. Store the first one.
             child = layout.takeAt(0)
             if child.widget() is not None:
+                # Object is a QWidget - delete.
                 child.widget().deleteLater()
             elif child.layout() is not None:
+                # Object is a QLayout - clear.
                 clearLayout(child.layout())
 
     def reset(self, clear=False):
+        """Maps to the "Reset" button. Erases all data pertaining to the set
+        of expressions displayed in the widget.
+
+        reset(bool)
+        """
+        # The entry line is cleared when reset() is called by the button.
+        # NOTE: this may now be redundant but it is harmless.
         if clear:
             self.clear_entry()
+        # Clear lists containing expression data.
         self._arg = []
         self.raw_premises = []
         self.pretty_premises = []
         self.premise_labels = []
+        # Clear the display of expressions.
         self.clear_layout(self.arg_layout)
+        # Clear the status bar.
         self.parent.statusBar().showMessage("")
+        # Disable the truth table button since there is no data to use.
         self.tableBtn.setDisabled(True)
 
     def add_op(self):
+        """Maps to the operators buttons. Inserts the operator in the entry
+        line.
+        """
+        # self.sender().text() retrieves the text used as the button label,
+        # in this case the desired operator.
         self.entry_line.insert(self.sender().text())
         self.return_entry()
 
@@ -694,7 +741,7 @@ class ArgCheck(QWidget):
     def show_op_info(self):
         pass
 
-    # Unimplemented feature.
+    # Override method in QWidget to assign keyboard shortcuts for operators.
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_F1:
             self.entry_line.insert(operators[0])

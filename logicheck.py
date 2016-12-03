@@ -50,6 +50,7 @@ class Logicheck(QMainWindow):
 
         # Create menu.
         # Create a help action which will go in a drop-down menu.
+        # The "&" in "&Help" specifies the Alt- shortcut key.
         helpAction = QAction(QIcon("images/logicheck_help_icon.png"),
                              "&Help", self)
         helpAction.setShortcut("Ctrl+H")
