@@ -1,10 +1,15 @@
-#project specific
+# project
 manual.txt
 
-#pycharm specific
+# pyinstaller
+build/
+dist/
+*.spec
+
+# pycharm
 .idea/
 
-#python specific
+# python
 *.pyc
 
 ## generic files to ignore
