@@ -3,7 +3,6 @@ manual.txt
 
 # pyinstaller
 build/
-dist/
 *.spec
 
 # pycharm
