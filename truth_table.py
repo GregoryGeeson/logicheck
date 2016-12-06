@@ -24,6 +24,8 @@ along with Logicheck.  If not, see <http://www.gnu.org/licenses/>.
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 
+from resource_path import resource_path
+
 
 class TruthTable(object):
     """Handles the display of truth tables and the associated data.
@@ -163,4 +165,4 @@ class TruthTableWindow(QMainWindow):
         # main window.
         self.setGeometry(80, 110, 425, 540)
         self.setWindowTitle("Logicheck - Truth Table")
-        self.setWindowIcon(QIcon("LogicheckIcon3.png"))
+        self.setWindowIcon(QIcon(resource_path("images/logicheck_icon_3.png")))

@@ -27,6 +27,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QFont
 
 from argument import ArgCheck
+from resource_path import resource_path
 
 
 class Logicheck(QMainWindow):
@@ -46,12 +47,12 @@ class Logicheck(QMainWindow):
         # Set relative window position (first two args) and size.
         self.setGeometry(50, 80, 425, 540)
         self.setWindowTitle("Logicheck")
-        self.setWindowIcon(QIcon("images/logicheck_icon_3.png"))
+        self.setWindowIcon(QIcon(resource_path("images/logicheck_icon_3.png")))
 
         # Create menu.
         # Create a help action which will go in a drop-down menu.
         # The "&" in "&Help" specifies the Alt- shortcut key.
-        helpAction = QAction(QIcon("images/logicheck_help_icon.png"),
+        helpAction = QAction(QIcon(resource_path("images/logicheck_help_icon.png")),
                              "&Help", self)
         helpAction.setShortcut("Ctrl+H")
         # Connect the selection of the action to displaying the manual
@@ -65,13 +66,15 @@ class Logicheck(QMainWindow):
 
     def show_info(self):
         # Create window displaying the manual.
-        info_file = open("documents/manual.html")
+        info_file = open(resource_path("documents/manual.html"))
         # Get the contents (text).
         info = info_file.read()
         self.info_window = ManualWindow(info)
         font1 = QFont()
         font1.setPointSize(11)
         self.info_window.setFont(font1)
+        self.info_window.setWindowIcon(QIcon(resource_path(
+            "images/logicheck_icon_3.png")))
         self.info_window.show()
 
 
