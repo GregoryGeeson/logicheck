@@ -6,6 +6,7 @@ logicheck.py
 MANIFEST
 PKG-INFO
 README.md
+resource_path.py
 setup.py
 truth_table.py
 documents/manual.html
